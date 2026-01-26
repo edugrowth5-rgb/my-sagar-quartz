@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sagar Luxury Gold III Edition</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        :root {
+            --dial-silver: radial-gradient(circle, #ffffff 0%, #e0e0e0 100%);
+            --gold-border: linear-gradient(145deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+        }
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f4f4f4; font-family: 'Times New Roman', serif; }
+
+        .clock-case {
+            width: 360px; height: 360px;
+            background: var(--gold-border);
+            border-radius: 70px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .clock-face {
+            width: 310px; height: 310px;
+            background: var(--dial-silver);
+            border-radius: 55px;
+            position: relative;
+            border: 1px solid #d4af37;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        .brand-container { position: absolute; top: 90px; width: 100%; text-align: center; }
+        .brand-name { font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #333; }
+        .quartz { position: absolute; bottom: 95px; width: 100%; text-align: center; font-size: 11px; letter-spacing: 5px; color: #555; }
+
+        .marker { position: absolute; width: 100%; height: 100%; text-align: center; padding: 15px; box-sizing: border-box; }
+        .roman { font-size: 30px; font-weight: bold; color: #b8860b; text-shadow: 2px 2px 3px rgba(0,0,0,0.2); }
+        
+        .diamond-3d {
+            width: 16px; height: 16px; background: #fff;
+            transform: rotate(45deg); margin: 0 auto;
+            border: 2.5px solid #daa520;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .min-num { position: absolute; font-size: 12px; font-weight: bold; color: #444; font-family: Arial; }
+
+        /* Date Box - Shifted Left to make room for III */
+        .date-window {
+            position: absolute; 
+            right: 55px; /* Pehle 35px tha, ab thoda left kiya hai */
+            top: 50%; 
+            transform: translateY(-50%);
+            background: #fff; border: 2.2px solid #daa520;
+            padding: 3px 6px; font-size: 15px; font-weight: bold; color: #222;
+            z-index: 1;
+        }
+
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom; border-radius: 10px; transform: translateX(-50%); }
+        .hour { width: 9px; height: 75px; background: var(--gold-gradient); z-index: 11; border: 1.5px solid #8a6d3b; }
+        .minute { width: 6px; height: 110px; background: var(--gold-gradient); z-index: 12; border: 1.5px solid #8a6d3b; }
+        .second { width: 2px; height: 125px; background: #b8860b; z-index: 10; }
+        .center-dot { position: absolute; top: 50%; left: 50%; width: 16px; height: 16px; background: #222; border: 3px solid #daa520; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; }
+    </style>
+</head>
+<body>
+
+<div class="clock-case">
+    <div class="clock-face" id="face">
+        <div class="brand-container"><div class="brand-name">SAGAR</div></div>
+        <div class="date-window" id="date-display">MON 26</div>
+        <div class="hand hour" id="hour"></div>
+        <div class="hand minute" id="minute"></div>
+        <div class="hand second" id="second"></div>
+        <div class="center-dot"></div>
+        <div class="quartz">QUARTZ</div>
+    </div>
+</div>
+
+<script>
+    const face = document.getElementById('face');
+    const positions = [
+        { type: 'roman', val: 'XII', angle: 0 },
+        { type: 'diamond', angle: 30 }, { type: 'diamond', angle: 60 },
+        { type: 'roman', val: 'III', angle: 90 }, // Wapas add kiya
+        { type: 'diamond', angle: 120 }, { type: 'diamond', angle: 150 },
+        { type: 'roman', val: 'VI', angle: 180 },
+        { type: 'diamond', angle: 210 }, { type: 'diamond', angle: 240 },
+        { type: 'roman', val: 'IX', angle: 270 },
+        { type: 'diamond', angle: 300 }, { type: 'diamond', angle: 330 }
+    ];
+
+    positions.forEach(pos => {
+        const container = document.createElement('div');
+        container.className = 'marker';
+        container.style.transform = `rotate(${pos.angle}deg)`;
+        if(pos.type === 'roman') {
+            container.innerHTML = `<div class="roman" style="transform: rotate(-${pos.angle}deg)">${pos.val}</div>`;
+        } else {
+            container.innerHTML = `<div class="diamond-3d" style="transform: rotate(-${pos.angle + 45}deg)"></div>`;
+        }
+        face.appendChild(container);
+    });
+
+    for(let i=1; i<=12; i++) {
+        const minVal = i * 5;
+        // 15 ko abhi bhi skip kar rahe hain taaki III aur Date ke saath bheed na ho
+        if (minVal === 15) continue; 
+        const angle = i * 30;
+        const x = 155 + 100 * Math.sin(angle * Math.PI / 180);
+        const y = 155 - 100 * Math.cos(angle * Math.PI / 180);
+        const el = document.createElement('div');
+        el.className = 'min-num';
+        el.style.left = `${x}px`; el.style.top = `${y}px`;
+        el.style.transform = 'translate(-50%, -50%)';
+        el.innerText = minVal === 60 ? '60' : minVal.toString().padStart(2, '0');
+        face.appendChild(el);
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const s = now.getSeconds() + now.getMilliseconds()/1000;
+        const m = now.getMinutes();
+        const h = now.getHours();
+        document.getElementById('second').style.transform = `translateX(-50%) rotate(${s * 6}deg)`;
+        document.getElementById('minute').style.transform = `translateX(-50%) rotate(${m * 6 + s * 0.1}deg)`;
+        document.getElementById('hour').style.transform = `translateX(-50%) rotate(${(h % 12) * 30 + m * 0.5}deg)`;
+        const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+        document.getElementById('date-display').innerText = `${days[now.getDay()]} ${now.getDate()}`;
+        requestAnimationFrame(updateClock);
+    }
+    requestAnimationFrame(updateClock);
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+    }
+</script>
+</body>
+</html>
