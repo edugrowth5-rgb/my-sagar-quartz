@@ -1,4 +1,4 @@
-const cacheName = 'sagar-gold-v1';
+const cacheName = 'sagar-gold-v2';
 const assetsToCache = [
   './',
   './index.html',
